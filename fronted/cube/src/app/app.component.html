@@ -1,0 +1,296 @@
+
+<div class="jumbotron">
+  <h1 class="display-6">Api operaciones cúbicas</h1>
+  <hr class="my-4">
+  <p class="lead">Esta api permite realizar operaciones con una matriz 3D o "CUBO", se tiene 2 modalidades: automático y manual.<br> Por favor elija una opción:</p>
+  <div class="form-check">
+      <input class="form-check-input" type="radio" name="exampleRadios"  value="1" checked (click)="fnchangecheck($event['toElement']['value'])">
+      <label class="form-check-label" for="exampleRadios1">
+        Automático
+      </label>
+  </div>
+  <div class="form-check">
+      <input class="form-check-input" type="radio" name="exampleRadios"  value="2" (click)="fnchangecheck($event['toElement']['value'])">
+      <label class="form-check-label" for="exampleRadios2">
+        Manual
+      </label>
+  </div>  
+  <div style="align-content: center; margin-top: 10px" class="form-group mb-2" >
+      <button type="button" [disabled]="btnEjecutar" class="btn btn-outline-primary" (click)="viewFormoptions()">Ejecutar</button>
+  </div>
+  
+  
+  <!-- configuracion manual-->
+ <div *ngIf="formOptions" style="margin-top: 5%">
+  <div>
+      <h4><span class="badge badge-primary">Modo Manual</span></h4>
+      <hr>
+      <div *ngIf="messageAlert" class="alert alert-primary" role="alert">{{message}}</div>
+      <div class="form-group row">
+        <label class="col-2 col-form-label">Número de test</label>
+        <div class="col-3">
+          <input class="form-control" type="number" placeholder="0" [(ngModel)]="num_test" required>
+        </div>
+      </div> 
+  </div>
+  <form class="form-inline">
+    <div style="align-content: center; margin-top: 10px" class="form-group mb-2">
+        <a class="btn btn-outline-primary" #viewModal role="button" data-toggle="modal" data-target="#configModal">Aplicar</a>
+      <!-- <button type="button" class="btn btn-outline-primary" data-dismiss="modal" data-target="#configModal" (click)="fnsaveConfig()" >Aplicar</button> --> 
+    </div>
+    <div style="align-content: center; margin-top: 10px" class="form-group mx-sm-3 mb-2">
+      
+        <a class="btn btn-outline-danger" href="#" role="button" (click)="hideFormoptions()">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+  <!-- Modal configuracion-->
+  <div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="exampleModalLabel"><span class="badge badge-light">Configuración cubo  test # {{contador_test+1}}</span></h4>
+        </div>
+        <div class="modal-body">
+              <div *ngIf="messageAlert" class="alert alert-primary" role="alert">{{message}}</div>    
+            <div class="form-group row">
+                <label class="col-3 col-form-label">Matriz: </label>
+                <div class="col-4">  
+                  <input class="form-control" type="number" [disabled]="disablebtnConfig" placeholder="0" [(ngModel)]="num_cubo">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-3 col-form-label">Número Operaciones: </label>
+                <div class="col-4">  
+                  <input class="form-control" type="number"  [disabled]="disablebtnConfig" placeholder="0" [(ngModel)]="num_consultas">
+                </div>
+            </div>
+            <table *ngIf="tableConfig" class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Configuración #</th>
+                    <th scope="col">Matriz</th>
+                    <th scope="col">Operaciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of listaConsultalabel" >
+                    <th scope="row">{{item.id+1}}</th>
+                    <td>{{item.longitud}}</td>
+                    <td>{{item.operaciones}}</td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>       
+        <div class="modal-footer">
+          <button type="button" [disabled]="disablebtnConfig" class="btn btn-primary" (click)="fnagregarConfig()">Agregar</button>
+          <button type="button" [disabled]="!disablebtnConfig" class="btn btn-success" data-dismiss="modal" data-target="#consulModal" (click)="fnsaveConfig()" >Guardar</button>
+          <button type="button"  class="btn btn-danger" data-dismiss="modal" (click)="fncleanModal()" >Cancelar</button>
+          
+        </div>
+      </div>
+    </div>
+  </div>  <!-- Modal -->
+   <!-- Form Operaciones -->
+<div *ngIf="formConsult" style="margin-top: 2%">
+    <div>
+        <div class="d-flex bd-highlight">
+        <h4 class="p-2 flex-fill bd-highlight">Operacion # {{label_operaciones}} de configuración {{label_config}} </h4> 
+        <div class="p-2 flex-fill bd-highlight">
+            <div style="align-content: center; margin-top: 10px" class="form-group mb-2">
+                <a class="btn btn-outline-info" #viewModal role="button" data-toggle="modal" data-target="#listconfigModal">Ver configuraciones</a>
+            </div>           
+        </div>
+        <div *ngIf=" config.consul.length > 0" class="p-2 flex-fill bd-highlight">
+          <div style="align-content: center; margin-top: 10px" class="form-group mb-2">
+            <a class="btn btn-outline-info" #viewModal role="button" data-toggle="modal" data-target="#listoperaModal">Ver operaciones</a>
+          </div>
+        </div>
+      </div>
+        <hr>
+        <div class="form-group row">
+          <label class="col-1 col-form-label">Consulta</label>
+          <div class="col-md-3">
+              <select [(ngModel)]="tipo_consulta" name="tipo_consulta" class="form-control">
+                <option value="">Seleccione consulta</option>
+                <option value="query">Query</option>
+                <option value="update">Update</option>
+              </select>      
+          </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-1 col-form-label">x: </label>
+            <div class="col-1">  
+              <input class="form-control" type="number" [disabled]="disablebtnOper" [(ngModel)]="x">
+            </div>
+            <label class="col-1 col-form-label">y: </label>
+            <div class="col-1">  
+              <input class="form-control" type="number" [disabled]="disablebtnOper"  placeholder="0" [(ngModel)]="y">
+            </div>
+            <label class="col-1 col-form-label">z: </label>
+            <div class="col-1">  
+              <input class="form-control" type="number" [disabled]="disablebtnOper"  placeholder="0" [(ngModel)]="z">
+            </div>
+            <label *ngIf="tipo_consulta != 'query'" class="col-1 col-form-label">w: </label>
+            <div class="col-1">  
+              <input *ngIf="tipo_consulta != 'query'" class="form-control" type="number" [disabled]="disablebtnOper" 
+                placeholder="0" [(ngModel)]="w">
+            </div>
+        </div>
+        <div *ngIf="tipo_consulta == 'query'" class="form-group row">
+          <label class="col-1 col-form-label">x1: </label>
+          <div class="col-1">  
+            <input class="form-control" type="number" [disabled]="disablebtnOper"  placeholder="0" [(ngModel)]="x1">
+          </div>
+          <label class="col-1 col-form-label">y1: </label>
+          <div class="col-1">  
+            <input class="form-control" type="number" [disabled]="disablebtnOper"  placeholder="0" [(ngModel)]="y1">
+          </div>
+          <label class="col-1 col-form-label">z1: </label>
+          <div class="col-1">  
+            <input class="form-control" type="number" [disabled]="disablebtnOper"  placeholder="0" [(ngModel)]="z1">
+          </div>
+      </div>   
+        <button type="button" [disabled]="disablebtnOper" class="btn btn-primary" (click)="fnagregarOperaciones()">Agregar</button>
+        <button type="button"  class="btn btn-outline-danger" (click)="fncancelOperacion()">Cancelar</button>
+        <button *ngIf="disablebtnOper" type="button" class="btn btn-outline-success" (click)="enviar()">Enviar</button>
+</div>  <!-- Operaciones -->
+</div> 
+ <!-- Modal configuracion-->
+ <div class="modal fade" id="listconfigModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="exampleModalLabel"><span class="badge badge-light">Configuraciones</span></h4>
+        </div>
+        <div class="modal-body">
+            <div *ngIf="messageAlert" class="alert alert-primary" role="alert">{{message}}</div>
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Configuración #</th>
+                    <th scope="col">Matriz</th>
+                    <th scope="col">Operaciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of listaConsultalabel; let indice=index" >
+                    <th scope="row">{{item.id+1}}</th>
+                    <td>{{item.longitud}}</td>
+                    <td>{{item.operaciones}}</td>
+                  </tr>
+                </tbody>
+            </table>
+        </div>       
+        <div class="modal-footer">
+          <button type="button"  class="btn btn-primary" data-dismiss="modal">Ocultar</button>          
+        </div>
+      </div>
+    </div>
+  </div>  <!-- Modal -->
+
+  <!-- Modal Operaciones-->
+ <div class="modal fade" id="listoperaModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="exampleModalLabel"><span class="badge badge-light">Operaciones</span></h4>
+      </div>
+      <div class="modal-body">
+          <div *ngIf="messageAlert" class="alert alert-primary" role="alert">{{message}}</div>
+          <table class="table" id="tablemodaloperacion">
+              <thead>
+                <tr>
+                  <th scope="col">Operación #</th>
+                  <th scope="col">Contenido</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of config.consul; let indice=index" >
+                  <th scope="row">{{indice+1}}</th>
+                  <td>{{item}}</td>
+                </tr>
+              </tbody>
+          </table>
+      </div>       
+      <div class="modal-footer">
+        <button type="button"  class="btn btn-primary" data-dismiss="modal">Ocultar</button>          
+      </div>
+    </div>
+  </div>
+</div>  <!-- Modal -->
+</div>
+
+<div *ngIf="tablemanual" class="container">
+    <div class="row">
+        <div class="col-sm"></div>
+        <div class="col-sm">
+            <h4 class="text-info"> Operaciones modo Manual </h4>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">test #</th>
+                <th scope="col">Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of tablemanual; let indice = index;" >
+                <th scope="row">{{indice+1}}</th>
+                <td>{{item}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm"></div>
+      </div>
+</div>
+
+
+<div *ngIf="tableauto" id="tablaauto">
+    <div class="row">
+        <div class="col-sm"></div>
+        <div class="col-sm">
+          <h4 class="text-info">Pruebas unitarias </h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">test #</th>
+              <th scope="col">Operacion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of listaresp[0]; let indice = index;" >
+              <th scope="row">{{indice+1}}</th>
+              <td>{{item}}  </td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="col-sm"></div>
+    </div>
+  </div>
+
+  <div *ngIf="tableauto" id="tablaauto">
+    <div class="row">
+        <div class="col-sm"></div>
+        <div class="col-sm">
+          <h4 class="text-info">Pruebas de integración </h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">test #</th>
+              <th scope="col">Operacion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of listaresp[1]; let indice = index;" >
+              <th scope="row">{{indice+1}}</th>
+              <td>{{item}}  </td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="col-sm"></div>
+    </div>
+  </div>
