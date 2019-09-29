@@ -1,4 +1,4 @@
-#Aplicación cube
+## Aplicación cube
 
 Esta aplicación permite definir una matriz con un tamaño y un número de operaciones, actualmente solo tiene 2 operaciones las cuales son una de actualización y otra para realizar suma.
 
